@@ -1,0 +1,80 @@
+version: 2.1
+orbs:
+  node: circleci/node@1.1.6
+  aws-ecr: circleci/aws-ecr@6.7.1
+
+executors:
+  default:
+    working_directory: ~/project
+    docker:
+      - image: circleci/node:12
+  test:
+    working_directory: ~/project
+    docker:
+      - image: circleci/node:12
+      - image: postgres:11-alpine
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+
+jobs:
+  build:
+    executor: default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm install
+      - run: npm run build
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - 'dist'
+            - 'node_modules'
+  test:
+    executor: test
+    parallelism: 2
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Database Start wait until
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: install postgresql-client
+          command: |
+            sudo apt-get update
+            sudo apt-get install postgresql-client
+      - run:
+          name: Database Setup
+          command: psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE rem_test"
+      - run:
+          name: Database migration
+          working_directory: ~/project/migration
+          command: |
+            npm install
+            npm run migration:run:test
+      - run: npm test
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - aws-ecr/build-and-push-image:
+          requires:
+            - test
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: 'rem-api'
+          region: AWS_REGION
+          tag: $CIRCLE_SHA1
+          path: .
+          filters:
+            branches:
+              only:
+                - /feature.*/
+                - master

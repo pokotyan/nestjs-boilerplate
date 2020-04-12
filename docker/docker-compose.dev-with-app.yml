@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: ./Dockerfile
+      target: development
+    command: npm start
+    ports:
+      - '3000:3000'
+    environment:
+      - REM_DB_HOST=rem_db
+    depends_on:
+      - db
+  db:
+    container_name: rem_db
+    image: postgres:11-alpine
+    volumes:
+      - ./setup:/docker-entrypoint-initdb.d/
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=rem,rem_test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

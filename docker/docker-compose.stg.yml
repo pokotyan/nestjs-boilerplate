@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  app:
+    image: '************.dkr.ecr.ap-northeast-1.amazonaws.com/rem-api:${SHA1}'
+    command: '${COMMAND}'
+    ports:
+      - '80:80'
+    environment:
+      - REM_API_REVISION="${SHA1}"
+      - SERVER_PORT=80
+    # set cloudwatch logs
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: '${LOG_GROUP}'
+        awslogs-region: ap-northeast-1
+        awslogs-stream-prefix: ecs

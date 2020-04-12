@@ -1,0 +1,6 @@
+{
+  "name": "show-command-help",
+  "cron": "cron(0/5 * * * ? *)",
+  "description": "コマンドのhelpを表示する",
+  "command": "node dist/src/command help"
+}

@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:11-alpine
+    volumes:
+      - ./setup:/docker-entrypoint-initdb.d/
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=rem,rem_test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

@@ -1,0 +1,24 @@
+[
+  {
+    "Id": "タスク名",
+    "Arn": "クラスターのARN",
+    "RoleArn": "arn:aws:iam::*************:role/ecsEventsRole",
+    "Input": "",
+    "EcsParameters": {
+      "TaskDefinitionArn": "タスク定義のARN",
+      "TaskCount": 1,
+      "LaunchType": "FARGATE",
+      "NetworkConfiguration": {
+        "awsvpcConfiguration": {
+          "Subnets": [
+            "subnet-********"
+          ],
+          "SecurityGroups": [
+            "sg-*****************"
+          ],
+          "AssignPublicIp": "ENABLED"
+        }
+      }
+    }
+  }
+]

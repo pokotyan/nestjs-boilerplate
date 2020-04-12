@@ -1,0 +1,29 @@
+version: 1
+task_definition:
+  task_execution_role: ecsTaskExecutionRole
+  ecs_network_mode: awsvpc
+  task_size:
+    cpu_limit: '256'
+    mem_limit: '512'
+  services:
+    app:
+      secrets:
+        # rem database
+        - value_from: arn:aws:ssm:ap-northeast-1:************:parameter/STG_REM_DB_HOST
+          name: REM_DB_HOST
+        - value_from: arn:aws:ssm:ap-northeast-1:************:parameter/STG_REM_DB_DATABASE
+          name: REM_DB_DATABASE
+        - value_from: arn:aws:ssm:ap-northeast-1:************:parameter/STG_REM_DB_USER
+          name: REM_DB_USER
+        - value_from: arn:aws:ssm:ap-northeast-1:************:parameter/STG_REM_DB_PASSWORD
+          name: REM_DB_PASSWORD
+      healthcheck:
+        test: ['CMD-SHELL', 'curl localhost/status || exit 1']
+run_params:
+  network_configuration:
+    awsvpc_configuration:
+      subnets:
+        - subnet-********
+      security_groups:
+        - sg-*****************
+      assign_public_ip: ENABLED
