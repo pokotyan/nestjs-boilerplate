@@ -44,7 +44,7 @@
     "commander": "^5.0.0",
     "dayjs": "^1.8.23",
     "fastify-swagger": "^2.5.0",
-    "log4js": "^6.1.2",
+    "log4js": "^6.4.0",
     "mysql": "^2.18.1",
     "nestjs-console": "^2.1.0",
     "pg": "^7.18.2",
